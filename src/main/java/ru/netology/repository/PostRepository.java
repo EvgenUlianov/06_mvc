@@ -2,6 +2,7 @@ package ru.netology.repository;
 
 import org.springframework.stereotype.Repository;
 import ru.netology.exception.BadRequestException;
+import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
 import java.util.*;
@@ -29,11 +30,11 @@ public class PostRepository {
             .toList();
   }
 
-  public Post getById(long id) {
+  public Post getById(long id)  throws NotFoundException {
     if (posts.containsKey(id))
       return posts.get(id);
     else
-      return null;
+      throw new NotFoundException("Has not found");
   }
 
   public synchronized Post save(Post post)  throws BadRequestException {
