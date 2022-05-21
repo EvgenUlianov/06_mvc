@@ -44,8 +44,6 @@ public class PostController {
     final Post data;
     try {
       data = service.save(post);
-    }catch (HasBeenDeleted e){
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }catch (BadRequestException e){
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
