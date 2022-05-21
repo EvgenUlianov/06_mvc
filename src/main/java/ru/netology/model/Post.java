@@ -1,11 +1,19 @@
 package ru.netology.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.gson.annotations.Expose;
 import lombok.Data;
 
 @Data
 public class Post {
+  @Expose(deserialize = false) // doesn't work too
   private long id;
+
+  @Expose
   private String content;
+
+  @JsonIgnore // doesn't work
+  @Expose(deserialize = false, serialize = false) // doesn't work too
   private boolean deletionMark;
 
   public Post() {

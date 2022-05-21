@@ -1,8 +1,11 @@
 package ru.netology.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.netology.exception.BadRequestException;
+import ru.netology.exception.HasBeenDeleted;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 import ru.netology.service.PostService;
@@ -23,14 +26,45 @@ public class PostController {
   }
 
   @GetMapping("/{id}")
-  public Post getById(@PathVariable long id) throws NotFoundException{
-    return service.getById(id);
+  public ResponseEntity<Post> getById(@PathVariable long id){
+    Post post;
+    try {
+      post = service.getById(id);
+    }catch (NotFoundException e){
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }catch (HasBeenDeleted e){
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    return new ResponseEntity<Post>(post, HttpStatus.OK);
   }
 
   @PostMapping
-  public Post save(@RequestBody Post post)  throws BadRequestException {
-    final Post data = service.save(post);
-    return data;
+  public ResponseEntity<Post>  save(@RequestBody Post post) {
+    final Post data;
+    try {
+      data = service.save(post);
+    }catch (HasBeenDeleted e){
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }catch (BadRequestException e){
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<Post>(data, HttpStatus.OK);
+  }
+
+  @PatchMapping("/{id}")
+  public ResponseEntity<Post>  save(@PathVariable long id, @RequestBody Post post) {
+    final Post data;
+    try {
+      data = service.save(id, post);
+    }catch (HasBeenDeleted e){
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }catch (BadRequestException e){
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }catch (NotFoundException e){
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    return new ResponseEntity<Post>(data, HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")

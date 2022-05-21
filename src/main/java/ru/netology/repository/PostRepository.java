@@ -2,21 +2,24 @@ package ru.netology.repository;
 
 import org.springframework.stereotype.Repository;
 import ru.netology.exception.BadRequestException;
+import ru.netology.exception.HasBeenDeleted;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 // Stub
 @Repository
 public class PostRepository {
   
   private final Map<Long, Post> posts;
-  private Long index;
+  private AtomicLong index;
 
   public PostRepository() {
-    posts = new HashMap<>();
-    index = -1L;
+    posts = new ConcurrentSkipListMap<>();
+    index = new AtomicLong(-1L);
   }
 
   public List<Post> all() {
@@ -30,30 +33,37 @@ public class PostRepository {
             .toList();
   }
 
-  public Post getById(long id)  throws NotFoundException {
-    if (posts.containsKey(id))
-      return posts.get(id);
-    else
+  public Post getById(long id)  throws NotFoundException, HasBeenDeleted {
+    if (posts.containsKey(id)){
+      Post post = posts.get(id);
+      if (post.isDeletionMark())
+        throw new HasBeenDeleted("Has been deleted");
+      else
+        return post;
+    } else
       throw new NotFoundException("Has not found");
   }
 
-  public synchronized Post save(Post post)  throws BadRequestException {
-    long id = post.getId();
+  public Post save(Post post)  throws BadRequestException {
+    long localIndex = index.incrementAndGet();
+    posts.put(localIndex, post);
+    post.setId(localIndex);
+    return post;
+  }
+
+  public Post save(long id, Post post)  throws BadRequestException, NotFoundException, HasBeenDeleted {
     if (posts.containsKey(id)){
       if (posts.get(id).isDeletionMark())
-        throw new BadRequestException("Has been deleted");
-      posts.put(index, post);
+        throw new HasBeenDeleted("Has been deleted");
+      posts.put(id, post);
       return posts.get(id);
     }
     else {
-      index++;
-      posts.put(index, post);
-      post.setId(index);
-      return post;
+      throw new NotFoundException("Has not found");
     }
   }
 
-  public synchronized void removeById(long id) {
+  public void removeById(long id) {
     if (posts.containsKey(id))
       posts.get(id).setDeletionMark(true);
   }

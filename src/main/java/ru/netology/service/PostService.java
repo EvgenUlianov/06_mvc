@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.netology.exception.BadRequestException;
+import ru.netology.exception.HasBeenDeleted;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 import ru.netology.repository.PostRepository;
@@ -24,13 +25,13 @@ public class PostService {
     return repository.all();
   }
 
-  public Post getById(long id) throws NotFoundException {
+  public Post getById(long id) throws NotFoundException, HasBeenDeleted {
     final Post post = repository.getById(id);
     if (post == null)
       throw new NotFoundException("Has not found");
     if (post.isDeletionMark())
-      throw new NotFoundException("Has been deleted, contact admin to restore");
-
+      throw new HasBeenDeleted("Has been deleted, contact admin to restore");
+//      return null;
     return post;
   }
 
@@ -38,6 +39,9 @@ public class PostService {
     return repository.save(post);
   }
 
+  public Post save(long id, Post post) throws BadRequestException, NotFoundException, HasBeenDeleted  {
+    return repository.save(id, post);
+  }
   public void removeById(long id) {
     repository.removeById(id);
   }

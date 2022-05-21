@@ -15,8 +15,6 @@ public class ApplicationInitializer  implements WebApplicationInitializer {
         context.scan("ru.netology");
         context.refresh();
 
-        System.out.println("sdvsdfvsdfvsdfvsdfvsdfvsdfv");
-
         final DispatcherServlet servlet = new DispatcherServlet(context);
         final ServletRegistration.Dynamic registration = servletContext.addServlet("app", servlet);
         registration.setLoadOnStartup(1);
