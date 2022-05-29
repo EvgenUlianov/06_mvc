@@ -9,16 +9,15 @@ POST http://localhost:9999/api/posts
 Content-Type: application/json
 
 {
-  "content": "Last Post"
+  "content": "Last Post2"
 }
 
 ###
-PATCH http://localhost:9999/api/posts/0
+PATCH http://localhost:9999/api/posts/1
 Content-Type: application/json
 
 {
-  "id": 1,
-  "content": "Last Post patched"
+  "content": "Last Post fgbfgbdfgbdfgbdfgbfgfgb"
 }
 
 ###

@@ -1,13 +1,11 @@
 package ru.netology.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.netology.exception.BadRequestException;
-import ru.netology.exception.HasBeenDeleted;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 // Stub
@@ -18,44 +16,42 @@ public class PostRepository {
   private AtomicLong index;
 
   public PostRepository() {
-    posts = new ConcurrentSkipListMap<>();
+    posts = new ConcurrentHashMap<>();
     index = new AtomicLong(-1L);
   }
 
   public List<Post> all() {
     Comparator<Post> comparator = (o1, o2) -> (int) (o1.getId() - o2.getId());
-//    List<Post> result = new ArrayList<>();
-//    result.addAll(posts.values().stream().toList());
-//    return result;
     return posts.values().stream()
             .filter((post)->!post.isDeletionMark())
             .sorted(comparator)
             .toList();
   }
 
-  public Post getById(long id)  throws NotFoundException, HasBeenDeleted {
+  public Post getById(long id)  throws NotFoundException {
     if (posts.containsKey(id)){
       Post post = posts.get(id);
       if (post.isDeletionMark())
-        throw new HasBeenDeleted("Has been deleted");
+        throw new NotFoundException("Has been deleted");
       else
         return post;
     } else
       throw new NotFoundException("Has not found");
   }
 
-  public Post save(Post post)  throws BadRequestException {
+  public Post save(Post post)  {
     long localIndex = index.incrementAndGet();
     posts.put(localIndex, post);
     post.setId(localIndex);
     return post;
   }
 
-  public Post save(long id, Post post)  throws BadRequestException, NotFoundException, HasBeenDeleted {
+  public Post save(long id, Post post)  throws NotFoundException {
     if (posts.containsKey(id)){
       if (posts.get(id).isDeletionMark())
-        throw new HasBeenDeleted("Has been deleted");
+        throw new NotFoundException("Has been deleted");
       posts.put(id, post);
+      post.setId(id);
       return posts.get(id);
     }
     else {

@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.netology.exception.BadRequestException;
-import ru.netology.exception.HasBeenDeleted;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 import ru.netology.service.PostService;
@@ -32,22 +30,14 @@ public class PostController {
       post = service.getById(id);
     }catch (NotFoundException e){
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }catch (HasBeenDeleted e){
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    return new ResponseEntity<Post>(post, HttpStatus.OK);
+    return new ResponseEntity<>(post, HttpStatus.OK);
   }
 
   @PostMapping
-  public ResponseEntity<Post>  save(@RequestBody Post post) {
-    final Post data;
-    try {
-      data = service.save(post);
-    }catch (BadRequestException e){
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-    return new ResponseEntity<Post>(data, HttpStatus.OK);
+  public Post  save(@RequestBody Post post) {
+    return service.save(post);
   }
 
   @PatchMapping("/{id}")
@@ -55,19 +45,14 @@ public class PostController {
     final Post data;
     try {
       data = service.save(id, post);
-    }catch (HasBeenDeleted e){
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }catch (BadRequestException e){
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }catch (NotFoundException e){
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    return new ResponseEntity<Post>(data, HttpStatus.OK);
+    return new ResponseEntity<>(data, HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")
-  public String removeById(@PathVariable long id) {
+  public void removeById(@PathVariable long id) {
     service.removeById(id);
-    return "";
   }
 }
