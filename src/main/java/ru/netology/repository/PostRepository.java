@@ -17,7 +17,7 @@ public class PostRepository {
 
   public PostRepository() {
     posts = new ConcurrentHashMap<>();
-    index = new AtomicLong(-1L);
+    index = new AtomicLong(0L);
   }
 
   public List<Post> all() {
@@ -46,12 +46,15 @@ public class PostRepository {
     return post;
   }
 
-  public Post save(long id, Post post)  throws NotFoundException {
+  public Post saveWithId(Post post)  throws NotFoundException {
+    long id = post.getId();
+    if (id < 1L)
+      throw new NotFoundException("Can not found index less than 1");
     if (posts.containsKey(id)){
       if (posts.get(id).isDeletionMark())
         throw new NotFoundException("Has been deleted");
+//      post.setDeletionMark(false);
       posts.put(id, post);
-      post.setId(id);
       return posts.get(id);
     }
     else {

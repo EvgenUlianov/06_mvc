@@ -13,11 +13,12 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:9999/api/posts/1
+PATCH http://localhost:9999/api/posts
 Content-Type: application/json
 
 {
-  "content": "Last Post fgbfgbdfgbdfgbdfgbfgfgb"
+  "id": 1,
+  "content": "Last Post fgbgfgbdfgbdfgbdfgbfgfgb"
 }
 
 ###

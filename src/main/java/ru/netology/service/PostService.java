@@ -31,8 +31,8 @@ public class PostService {
     return repository.save(post);
   }
 
-  public Post save(long id, Post post) throws NotFoundException  {
-    return repository.save(id, post);
+  public Post saveWithId(Post post) throws NotFoundException  {
+    return repository.saveWithId(post);
   }
   public void removeById(long id) {
     repository.removeById(id);

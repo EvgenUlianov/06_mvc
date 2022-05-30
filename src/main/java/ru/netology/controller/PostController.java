@@ -40,11 +40,11 @@ public class PostController {
     return service.save(post);
   }
 
-  @PatchMapping("/{id}")
-  public ResponseEntity<Post>  save(@PathVariable long id, @RequestBody Post post) {
+  @PatchMapping
+  public ResponseEntity<Post> saveWithId(@RequestBody Post post) {
     final Post data;
     try {
-      data = service.save(id, post);
+      data = service.saveWithId(post);
     }catch (NotFoundException e){
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

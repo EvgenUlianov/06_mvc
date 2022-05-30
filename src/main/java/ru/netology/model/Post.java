@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class Post {
-  @Expose(deserialize = false)
+  @Expose
   private long id;
 
   @Expose
