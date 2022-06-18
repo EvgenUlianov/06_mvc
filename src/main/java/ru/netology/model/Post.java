@@ -2,9 +2,11 @@ package ru.netology.model;
 
 import com.google.gson.annotations.Expose;
 import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
 @Data
 public class Post {
+
   @Expose
   private long id;
 

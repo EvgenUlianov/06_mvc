@@ -36,12 +36,16 @@ public class PostController {
   }
 
   @PostMapping
-  public Post  save(@RequestBody Post post) {
-    return service.save(post);
+  public ResponseEntity<Post>  save(@RequestBody Post post) {
+    if (post.getId() != 0L)
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(service.save(post), HttpStatus.OK);
   }
 
   @PatchMapping
   public ResponseEntity<Post> saveWithId(@RequestBody Post post) {
+    if (post.getId() == 0L)
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     final Post data;
     try {
       data = service.saveWithId(post);
